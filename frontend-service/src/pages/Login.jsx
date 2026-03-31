@@ -15,8 +15,8 @@ export function Login() {
     setLoading(true)
     try {
       const data = await api.login(email, password)
-      if (data?.token) {
-        setToken(data.token)
+      if (data?.access_token) {
+        setToken(data.access_token)
         navigate('/books')
       } else {
         setError('Invalid response from server')
