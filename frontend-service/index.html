@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookshop</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --text: #f8fafc;
+        --muted: #cbd5e1;
+        --accent: #3b82f6;
+        --card: #111827;
+        --border: #1f2937;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a { color: var(--accent); text-decoration: none; }
+      input, button {
+        font-family: inherit;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      }
+      .btn {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+      .input {
+        width: 100%;
+        padding: 10px 12px;
+        margin: 8px 0 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: #0b1220;
+        color: var(--text);
+      }
+      .error { color: #f87171; margin-top: 8px; }
+      .success { color: #22c55e; margin-top: 8px; }
+      nav {
+        background: #0b1220;
+        border-bottom: 1px solid var(--border);
+        padding: 12px 16px;
+      }
+      nav .nav-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      nav .links { display: flex; gap: 16px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
