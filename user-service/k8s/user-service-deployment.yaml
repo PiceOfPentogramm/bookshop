@@ -12,10 +12,6 @@ spec:
       labels:
         app: user-service
     spec:
-      initContainers:
-        - name: wait-for-postgres
-          image: busybox
-          command: ['sh', '-c', 'until nc -z postgres 5432; do sleep 1; done']
       containers:
         - name: user-service
           image: user-service:latest

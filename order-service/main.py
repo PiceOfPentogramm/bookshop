@@ -48,18 +48,18 @@ def create_order_endpoint(order_data: OrderCreate, db: Session = Depends(get_db)
     return order
 
 
+# Note: register this route before the /orders/{order_id} to avoid shadowing
+@app.get("/orders/user/{user_id}", response_model=list[OrderResponse])
+def get_orders_for_user(user_id: uuid.UUID, db: Session = Depends(get_db)):
+    return get_orders_by_user(db, user_id)
+
+
 @app.get("/orders/{order_id}", response_model=OrderResponse)
 def get_order(order_id: uuid.UUID, db: Session = Depends(get_db)):
     order = get_order_by_id(db, order_id)
     if order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
     return order
-
-
-# Note: register this route before the /orders/{order_id} to avoid shadowing
-@app.get("/orders/user/{user_id}", response_model=list[OrderResponse])
-def get_orders_for_user(user_id: uuid.UUID, db: Session = Depends(get_db)):
-    return get_orders_by_user(db, user_id)
 
 
 @app.patch("/orders/{order_id}/status", response_model=OrderResponse)
