@@ -53,7 +53,7 @@ async def api_gateway(path: str, request: Request, payload=Depends(_auth_depende
     extra_headers = {}
     token_payload = getattr(request.state, "user_payload", None)
     if token_payload:
-        extra_headers["X-User-Id"] = str(token_payload.get("user_id"))
+        extra_headers["X-User-Id"] = str(token_payload.get("sub"))
         extra_headers["X-User-Role"] = str(token_payload.get("role"))
 
     return await proxy_request(base_url, full_path, request, extra_headers)
