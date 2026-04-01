@@ -1,4 +1,3 @@
-version: '3.4'
 
 services:
   postgres:
@@ -117,6 +116,7 @@ services:
     image: grafana/grafana
     volumes:
       - grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
     ports:
       - 3001:3000
 

@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from database import get_db
 from schemas import UserCreate, UserLogin, UserResponse, TokenResponse
@@ -13,6 +14,7 @@ app = FastAPI(title="Bookshop User Service", version="1.0.0")
 
 security = HTTPBearer()
 
+Instrumentator().instrument(app).expose(app)
 
 @app.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
