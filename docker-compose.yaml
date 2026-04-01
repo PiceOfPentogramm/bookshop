@@ -1,0 +1,110 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=bookshop_users
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - 5672:5672  
+      - 15672:15672  
+
+  user-service:
+    build:
+      context: ./user-service/
+      dockerfile: dockerfile
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/bookshop_users
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - postgres
+    ports:
+      - 8001:8001
+
+  book-service:
+    build:
+      context: ./book-service/
+      dockerfile: dockerfile
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/bookshop_books
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - postgres
+    ports:
+      - 8002:8002
+
+  order-service:
+    build:
+      context: ./order-service/
+      dockerfile: dockerfile
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/bookshop_orders
+      - SECRET_KEY=${SECRET_KEY}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - USER_SERVICE_URL=http://user-service:8001
+      - BOOK_SERVICE_URL=http://book-service:8002
+    depends_on:
+      - postgres
+      - user-service
+      - book-service
+      - rabbitmq
+    ports:
+      - 8003:8003
+
+  notification-service:
+    build:
+      context: ./notification-service/
+      dockerfile: dockerfile
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/bookshop_notifications
+      - SECRET_KEY=${SECRET_KEY}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - 8004:8004
+
+  api-gateway:
+    build:
+      context: ./api-gateway/
+      dockerfile: dockerfile
+    environment:
+      - USER_SERVICE_URL=http://user-service:8001
+      - BOOK_SERVICE_URL=http://book-service:8002
+      - ORDER_SERVICE_URL=http://order-service:8003
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - user-service
+      - book-service
+      - order-service
+    ports:
+      - 8000:8000
+
+  frontend:
+    build:
+      context: ./frontend-service/
+      dockerfile: dockerfile
+    depends_on:
+      - api-gateway
+    ports:
+      - 3000:3000
+
+volumes:
+  postgres:
+  rabbitmq_data:
