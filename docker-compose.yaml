@@ -19,7 +19,7 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq:/var/lib/rabbitmq
     ports:
       - 5672:5672  
       - 15672:15672  
@@ -105,6 +105,23 @@ services:
     ports:
       - 3000:3000
 
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus:/prometheus
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana:/var/lib/grafana
+    ports:
+      - 3001:3000
+
 volumes:
   postgres:
-  rabbitmq_data:
+  rabbitmq:
+  prometheus:
+  grafana:
