@@ -1,0 +1,36 @@
+name: Copilot_comment
+
+
+on:
+  workflow_dispatch:  # Ручной запуск через "Run workflow"
+    inputs:
+      base_branch:
+        description: 'Base branch name (e.g. main or dev)'
+        default: 'main'
+        required: true
+
+jobs:
+  Copilot_comment:
+    if: github.actor != 'github-actions'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+      - uses: actions/setup-copilot@v0.0.2
+        with:
+          version: latest
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          copilot --models gpt-5-mini --prompt "Твоя задача — проанализировать каждый файл в этом репозитории и общую архитектуру решения. Для каждого файла: 1. Напиши краткую документацию: что делает файл, какие ключевые компоненты там находятся, как он связан с другими файлами. 2. Для каждой функции/метода напиши документацию: назначение, входные параметры, возвращаемое значение, побочные эффекты. 3. Добавь комментарии в код ТОЛЬКО в том случае, если без них не понятно, что делает блок кода. При этом: если внутри уже есть комментарий (не TODO) — проанализируй его уместность и ясность; если он неуместен или написан плохо — перепиши его в более понятной форме; если это комментарий TODO — оставь его без изменений. ГЛАВНОЕ УСЛОВИЕ: ТЕБЕ НИ В КОЕМ СЛУЧАЕ НЕЛЬЗЯ ИЗМЕНЯТЬ, ПРАВИТЬ, ДОБАВЛЯТЬ ИЛИ КОРРЕКТИРОВАТЬ КОД, ДАЖЕ ЕСЛИ ТЫ ВИДИШЬ ОЧЕВИДНЫЕ, ГЛУПЫЕ ИЛИ БЕССМЫСЛЕННЫЕ ОШИБКИ. ТВОЯ ЗАДАЧА — ТОЛЬКО КОММЕНТИРОВАТЬ И ДОКУМЕНТИРОВАТЬ КОД, НЕ МЕНЯЯ СТРУКТУРУ И ЛОГИКУ. Ответ должен быть в формате: для каждого файла — отдельный раздел с описанием, для каждой функции — отдельный подраздел, для каждого комментария к коду — максимально близко по смыслу к тому месту, где он должен находиться, но В ВИДЕ ТЕКСТА, А НЕ ИЗМЕНЁННЫЙ КОД." --yes 
+          CURRENT_BRANCH=$(git branch --show-current)
+          NEW_BRANCH="copilot-refactor-${CURRENT_BRANCH}-$(date +%Y%m%d-%H%M%S)"
+
+          git switch -c "$NEW_BRANCH"
+          git apply copilot-suggestions.patch
+          git add .
+          git commit -m "Auto-reformat and documentation from Copilot"
+
+          git push origin "$NEW_BRANCH"
