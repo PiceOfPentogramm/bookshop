@@ -13,6 +13,8 @@ jobs:
       - uses: docker/setup-docker-action@v5.0.0
       - run: docker compose up -d --build
       - run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           for PORT in 8000 8001 8002 8003 8004; do
             MAX_RETRIES=120
             COUNT=0
