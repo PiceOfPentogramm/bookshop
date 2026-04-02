@@ -54,7 +54,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/bookshop_orders
       - SECRET_KEY=${SECRET_KEY}
-      - RABBITMQ_URL=${RABBITMQ_URL}
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/
       - USER_SERVICE_URL=http://user-service:8001
       - BOOK_SERVICE_URL=http://book-service:8002
     depends_on:
@@ -72,7 +72,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/bookshop_notifications
       - SECRET_KEY=${SECRET_KEY}
-      - RABBITMQ_URL=${RABBITMQ_URL}
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/
     depends_on:
       - postgres
       - rabbitmq
