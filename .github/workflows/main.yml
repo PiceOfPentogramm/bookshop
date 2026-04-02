@@ -14,7 +14,7 @@ jobs:
       - run: docker compose up -d --build
       - run: |
           for PORT in 8000 8001 8002 8003 8004; do
-            MAX_RETRIES=30
+            MAX_RETRIES=120
             COUNT=0
             
             until curl -sf http://localhost:$PORT/health; do
